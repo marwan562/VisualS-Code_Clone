@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { IFile } from "../../interfaces";
 import { fileTree } from "../../data";
 import { changeActiveFile } from "../../utils/changeActiveFile"; // Corrected function name
-import addFile from "../../utils/addFile";
+import { addItemToFileTree } from "../../utils/addFile";
 
 interface IClickedFile {
   fileName: string;
@@ -30,9 +30,15 @@ const fileTreeSlice = createSlice({
   name: "fileTree",
   initialState,
   reducers: {
-    addFileAction: (state, action:PayloadAction<IFile>) => {
-      state.fileTree = addFile(state.fileTree, action.payload, true);
-      // state.openedFiles = action.payload;
+    addFileAction: (
+      state,
+      action: PayloadAction<{ id: string; newItem:IFile }>
+    ) => {
+      state.fileTree = addItemToFileTree(
+        state.fileTree,
+        action.payload.id,
+        action.payload.newItem
+      );
     },
     setActiveFile: (
       state,
@@ -77,5 +83,6 @@ export const {
   setActiveFile,
   setContentAction,
   removeFileTap,
+  addFileAction,
 } = fileTreeSlice.actions;
 export default fileTreeSlice.reducer;

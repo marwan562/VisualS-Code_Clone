@@ -6,7 +6,7 @@ export const fileTree: IFile = {
   fileName: "VS Code Clone",
   isFolder: true,
   isOpen: true,
-  isActive: false,
+  isActive: true,
 
   children: [
     {
@@ -908,6 +908,61 @@ export const fileTree: IFile = {
             text-rendering: optimizeLegibility;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
+          }
+          `,
+        },
+      ],
+    },
+    {
+      id: uuidv4(),
+      fileName: "packages",
+      isActive: false,
+      isFolder: true,
+      isOpen: false,
+      children: [
+        {
+          id: uuidv4(),
+          fileName: "package.json",
+          isActive: false,
+          isFolder: false,
+          isOpen: false,
+          content: `{
+            "name": "redux-toolkit",
+            "private": true,
+            "version": "0.0.0",
+            "type": "module",
+            "scripts": {
+              "dev": "vite",
+              "build": "tsc && vite build",
+              "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+              "preview": "vite preview"
+            },
+            "dependencies": {
+              "@reduxjs/toolkit": "^2.2.5",
+              "react": "^18.2.0",
+              "react-dom": "^18.2.0",
+              "react-redux": "^9.1.2",
+              "react-resizable-panels": "^2.0.19",
+              "react-syntax-highlighter": "^15.5.0",
+              "uuid": "^9.0.1"
+            },
+            "devDependencies": {
+              "@types/react": "^18.2.66",
+              "@types/react-dom": "^18.2.22",
+              "@types/react-syntax-highlighter": "^15.5.13",
+              "@types/uuid": "^9.0.8",
+              "@typescript-eslint/eslint-plugin": "^7.2.0",
+              "@typescript-eslint/parser": "^7.2.0",
+              "@vitejs/plugin-react-swc": "^3.5.0",
+              "autoprefixer": "^10.4.19",
+              "eslint": "^8.57.0",
+              "eslint-plugin-react-hooks": "^4.6.0",
+              "eslint-plugin-react-refresh": "^0.4.6",
+              "postcss": "^8.4.38",
+              "tailwindcss": "^3.4.3",
+              "typescript": "^5.2.2",
+              "vite": "^5.2.0"
+            }
           }
           `,
         },

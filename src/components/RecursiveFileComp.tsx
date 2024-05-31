@@ -11,21 +11,34 @@ import {
   setOpenedFiles,
 } from "../toolkit/reducers/fileTreeSlice.ts";
 import { changeActiveFile } from "../utils/changeActiveFile.ts";
+import ButtonAddFolder from "./ButtonAddFolder.tsx";
+import ButtonAddFile from "./ButtonAddFile.tsx";
 
 type TProps = {
   fileTree: IFile;
+  showAddFolder?: boolean;
   showAddFile?: boolean;
+  setShowAddFile: (val: boolean) => void;
+  setShowAddFolder: (val: boolean) => void;
 };
 
-const RecursiveFileComp = ({ fileTree }: TProps) => {
+const RecursiveFileComp = ({
+  fileTree,
+  showAddFolder,
+  showAddFile,
+  setShowAddFile,
+
+  setShowAddFolder,
+}: TProps) => {
   const dispatch = useAppDispatch();
   const { openedFiles } = useAppSelector((state) => state.fileTree);
   const { fileName, isOpen, isFolder, children, isActive, id, content } =
     fileTree;
-
   // Handlers
 
   const openFileHandler = () => {
+    setShowAddFile(false);
+    setShowAddFolder(false);
     if (!isActive) {
       dispatch(setActiveFile(fileTree));
     } else if (isFolder && isActive) {
@@ -90,8 +103,24 @@ const RecursiveFileComp = ({ fileTree }: TProps) => {
         <p>{fileName}</p>
       </span>
 
+      {isActive && isFolder && !showAddFile && showAddFolder && (
+        <ButtonAddFolder selectId={fileTree.id} />
+      )}
+      {isActive && isFolder && !showAddFolder && showAddFile && (
+        <ButtonAddFile selectId={fileTree.id} />
+      )}
+
       {isOpen &&
-        children?.map((el) => <RecursiveFileComp key={el.id} fileTree={el} />)}
+        children?.map((el) => (
+          <RecursiveFileComp
+            setShowAddFile={setShowAddFile}
+            showAddFile={showAddFile}
+            setShowAddFolder={setShowAddFolder}
+            showAddFolder={showAddFolder}
+            key={el.id}
+            fileTree={el}
+          />
+        ))}
     </div>
   );
 };
