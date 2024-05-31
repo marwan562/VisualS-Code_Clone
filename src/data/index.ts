@@ -57,24 +57,28 @@ export const fileTree: IFile = {
           content: `import FolderComp from "./components/RecursiveFileComp";
           import OpenedFileBar from "./components/OpenedFileBar";
           import { useAppSelector } from "./toolkit/hooks";
+          import ResizeablePanel from "./components/ResizeablePanel";
+          import WelocmeTap from "./components/WelocmeTap";
+          
           
           function App() {
-            const { fileTree } = useAppSelector((state) => state.fileTree);
+            const { fileTree, openedFiles } = useAppSelector((state) => state.fileTree);
           
             return (
               <div className=" ">
                 <div className=" flex ">
-                  <div className=" my-3">
-                    <FolderComp fileTree={fileTree} />
-                  </div>
-                  <div className=" w-64  border-r border-r-gray-600 h-screen p-2"></div>
-                  <OpenedFileBar />
+                  <ResizeablePanel
+                    showLeftPanel
+                    leftPanel={<FolderComp fileTree={fileTree} />}
+                    rightPanel={openedFiles.length ? <OpenedFileBar /> : <WelocmeTap />}
+                  />
                 </div>
               </div>
             );
           }
           
           export default App;
+          
           `,
         },
         {
@@ -114,7 +118,140 @@ export const fileTree: IFile = {
           isFolder: true,
           isOpen: false,
           isActive: false,
+
           children: [
+            {
+              id: uuidv4(),
+              fileName: "UI",
+              isFolder: true,
+              isOpen: false,
+              isActive: false,
+              children: [
+                {
+                  id: uuidv4(),
+                  fileName: "Menu.tsx",
+                  isFolder: false,
+                  isOpen: false,
+                  isActive: false,
+                  content: `import { ReactNode, useEffect, useRef } from "react";
+
+                  type TProps = {
+                    closeMenu: (val: boolean) => void;
+                    children: ReactNode;
+                    position: {
+                      x: number;
+                      y: number;
+                    };
+                  };
+                  
+                  const Menu = ({ position: { x, y }, closeMenu, children }: TProps) => {
+                    const menuRef = useRef<HTMLDivElement>(null);
+                  
+                    useEffect(() => {
+                      const clickOutSide = (e: MouseEvent) => {
+                        if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+                          closeMenu(false);
+                        }
+                      };
+                  
+                      window.addEventListener("click", clickOutSide);
+                  
+                      return () => {
+                        window.removeEventListener("click", clickOutSide);
+                      };
+                    }, [closeMenu]);
+                  
+                    return (
+                      <div
+                        ref={menuRef}
+                        style={{ position: "absolute", top: y, left: x }}
+                        className="bg-gray-600 text-white  font-extralight text-sm  px-6 py-1 p-1  w-1/5 rounded-md "
+                      >
+                        {children}
+                      </div>
+                    );
+                  };
+                  
+                  export default Menu;
+                  `,
+                },
+              ],
+            },
+
+            {
+              id: uuidv4(),
+              fileName: "WelcomeTap.tsx",
+              isFolder: false,
+              isOpen: false,
+              isActive: false,
+              content: `const WelocmeTap = () => {
+                return (
+                  <div className=" h-screen flex items-center justify-center">
+                    <div className="">
+                      <h2 className=" text-center font-semibold text-4xl mb-9 mr-6">
+                        Visual Studio Code
+                      </h2>
+                      <img
+                        className=" w-64"
+                        src="src/assets/icons/vscode.svg"
+                        alt="Welcome_Tap"
+                      />
+                    </div>
+                  </div>
+                );
+              };
+              
+              export default WelocmeTap;
+              `,
+            },
+            {
+              id: uuidv4(),
+              fileName: "ResizealblePanel.tsx",
+              isFolder: false,
+              isOpen: false,
+              isActive: false,
+              content: `import React from "react";
+              import { PanelGroup, Panel, PanelResizeHandle } from "react-resizable-panels";
+              
+              type TType = {
+                defaultLayout?: number[] | undefined;
+                leftPanel: React.ReactNode;
+                rightPanel: React.ReactNode;
+                showLeftPanel: boolean;
+              };
+              
+              const ResizeablePanel = ({
+                leftPanel,
+                rightPanel,
+                showLeftPanel,
+                defaultLayout = [33, 67],
+              }: TType) => {
+                const onLayout = (sizes: number[]) => {
+                  document.cookie = 'react-resizable-panels:layout={JSON.stringify(sizes)}'
+                };
+                return (
+                  <PanelGroup
+                    direction="horizontal"
+                    onLayout={onLayout}
+                    autoSaveId="condition"
+                  >
+                    {showLeftPanel && (
+                      <>
+                        <Panel collapsible={true} minSize={17}>
+                          {leftPanel}
+                        </Panel>
+                        <PanelResizeHandle className="border-r-2 h-screen bg-slate-400" />
+                      </>
+                    )}
+              
+                    <Panel defaultSize={defaultLayout[1]}>{rightPanel}</Panel>
+                  </PanelGroup>
+                );
+              };
+              
+              export default ResizeablePanel;
+              `,
+            },
             {
               id: uuidv4(),
               fileName: "FileSyntaxHighlight.tsx",
@@ -152,37 +289,90 @@ export const fileTree: IFile = {
               isActive: false,
               isFolder: false,
               isOpen: false,
-              content: `import { useAppSelector } from "../toolkit/hooks";
+              content: `import { useState } from "react";
+              import { useAppDispatch, useAppSelector } from "../toolkit/hooks";
               import { filterOpenedFiles } from "../utils/filterOpenedFiles";
               import FileSyntaxHighlight from "./FileSyntaxHighlight";
               import OpenedFileBarTap from "./OpenedFileBarTap";
+              import Menu from "./UI/Menu";
+              import {
+                removeFile,
+                setActiveFile,
+                setContentAction,
+              } from "../toolkit/reducers/fileTreeSlice";
               
               const OpenedFileBar = () => {
-                const { openedFiles, fileTree, clickedFile } = useAppSelector(
+                const [showMenu, setShowMenu] = useState(false);
+                const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
+              
+                const { openedFiles, fileTree, clickedFile, removeFileTap } = useAppSelector(
                   (state) => state.fileTree
                 );
               
-                console.log(fileTree);
+                const contextMuneHandler = (
+                  e: React.MouseEvent<HTMLUListElement, MouseEvent>
+                ) => {
+                  e.preventDefault();
+                  setShowMenu(true);
+                  setMenuPosition({ x: e.clientX, y: e.clientY });
+                };
+                const dispatch = useAppDispatch();
               
                 const filterOpenedFile = filterOpenedFiles(openedFiles, fileTree);
               
+                const closeOneFile = () => {
+                  setShowMenu(false);
+                  const filter = openedFiles.filter((file) => file.id !== removeFileTap);
+                  const lastTap = filter[filter.length - 1];
+                  const fileLastTap = openedFiles.find((file) => file?.id === lastTap?.id);
+              
+                  dispatch(removeFile(filter));
+                  dispatch(
+                    setContentAction({
+                      fileContent: lastTap?.content,
+                      fileName: lastTap?.fileName,
+                    })
+                  );
+                  dispatch(setActiveFile(fileLastTap));
+                };
+                const closeAllFiles = () => {
+                  setShowMenu(false);
+                  dispatch(removeFile([]));
+                };
                 return (
                   <div>
-                    <ul className=" flex  items-center ">
+                    <ul onContextMenu={contextMuneHandler} className=" flex  items-center ">
                       {filterOpenedFile.map((el) => (
                         <OpenedFileBarTap key={el.id} fileTree={el} />
                       ))}
                     </ul>
-                    {clickedFile.fileContent ? (
+                    {clickedFile.fileContent && (
                       <FileSyntaxHighlight content={clickedFile.fileContent} />
-                    ) : (
-                      clickedFile.fileName && <FileSyntaxHighlight content={"  "} />
+                    )}
+                    {showMenu && (
+                      <Menu closeMenu={setShowMenu} position={menuPosition}>
+                        <ul>
+                          <li
+                            onClick={closeOneFile}
+                            className=" hover:bg-blue-500 w-full  cursor-pointer p-1 mb-1 rounded-md duration-200 hover:scale-105"
+                          >
+                            Close
+                          </li>
+                          <li
+                            onClick={closeAllFiles}
+                            className="hover:bg-blue-500 w-full p-1  cursor-pointer rounded-md duration-200 hover:scale-105"
+                          >
+                            Close All
+                          </li>
+                        </ul>
+                      </Menu>
                     )}
                   </div>
                 );
               };
               
               export default OpenedFileBar;
+              
               `,
             },
             {
@@ -191,11 +381,13 @@ export const fileTree: IFile = {
               isActive: false,
               isFolder: false,
               isOpen: false,
-              content: `import FolderStyles from "../assets/SVG/IconsGenerate";
+              content: `import React from "react";
+              import FolderStyles from "../assets/SVG/IconsGenerate";
               import { IFile } from "../interfaces";
               import { useAppDispatch, useAppSelector } from "../toolkit/hooks";
               import {
                 removeFile,
+                removeFileTap,
                 setActiveFile,
                 setContentAction,
                 setOpenedFiles,
@@ -203,13 +395,10 @@ export const fileTree: IFile = {
               import { changeActiveFile } from "../utils/changeActiveFile";
               
               const OpenedFileBarTap = ({ fileTree }: { fileTree: IFile }) => {
-                const { fileName, id, isActive, content } = fileTree;
                 const dispatch = useAppDispatch();
-                const { openedFiles } = useAppSelector((state) => state.fileTree);
+                const { fileName, id, isActive, content } = fileTree;
               
-                const removeFileHandler = () => {
-                  dispatch(removeFile({ id }));
-                };
+                const { openedFiles } = useAppSelector((state) => state.fileTree);
               
                 const openFileHandler = () => {
                   dispatch(setContentAction({ fileContent: content, fileName }));
@@ -224,22 +413,44 @@ export const fileTree: IFile = {
                   }
                 };
               
+                const onRemoveHandler = (
+                  e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+                ) => {
+                  e.stopPropagation();
+              
+                  const filter = openedFiles.filter((file) => file.id !== fileTree?.id);
+                  const lastTap = filter[filter.length - 1];
+                  const fileLastTap = openedFiles.find((file) => file?.id === lastTap?.id);
+              
+                  dispatch(removeFile(filter));
+                  dispatch(
+                    setContentAction({
+                      fileContent: lastTap?.content,
+                      fileName: lastTap?.fileName,
+                    })
+                  );
+                  dispatch(setActiveFile(fileLastTap));
+                };
+              
                 return (
                   <li
+                    onContextMenu={() => {
+                      dispatch(removeFileTap(fileTree.id));
+                    }}
                     onClick={openFileHandler}
                     key={id}
                     className={' duration-300 flex items-center {
                       isActive
-                        ? " border-t-4  border-cyan-500 "
+                        ? " border-t-4  border-cyan-600 "
                         : "hover:bg-gray-500 border-t-4  border-t-transparent"
                     }  justify-center space-x-2 p-2 cursor-pointer duration-300  hover:opacity-90'}
                   >
                     <FolderStyles name={fileName} />
                     <h2>{fileName}</h2>
                     <button
-                      title="remove file"
-                      onClick={removeFileHandler}
-                      className="text-white  hover:bg-gray-600  hover:block"
+                      title="Close-File"
+                      onClick={onRemoveHandler}
+                      className="text-white  hover:bg-gray-700 rounded-md  "
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -256,6 +467,7 @@ export const fileTree: IFile = {
               };
               
               export default OpenedFileBarTap;
+              
               `,
             },
             {
@@ -359,6 +571,7 @@ export const fileTree: IFile = {
               };
               
               export default memo(RecursiveFileComp);
+              
               `,
             },
           ],
@@ -445,6 +658,7 @@ export const fileTree: IFile = {
                     fileTree: IFile;
                     openedFiles: IFile[];
                     clickedFile: IClickedFile;
+                    removeFileTap: string | null;
                   };
                   
                   const initialState: TState = {
@@ -454,16 +668,20 @@ export const fileTree: IFile = {
                       fileName: "",
                       fileContent: "",
                     },
+                    removeFileTap: null,
                   };
                   
                   const fileTreeSlice = createSlice({
                     name: "fileTree",
                     initialState,
                     reducers: {
-                      setActiveFile: (state, action: PayloadAction<IFile>) => {
+                      setActiveFile: (
+                        state,
+                        action: PayloadAction<{ id: string } | undefined>
+                      ) => {
                         state.fileTree = changeActiveFile(
                           state.fileTree,
-                          action.payload.id,
+                          action?.payload?.id,
                           true
                         );
                       },
@@ -486,22 +704,19 @@ export const fileTree: IFile = {
                       setContentAction: (state, actions: PayloadAction<IClickedFile>) => {
                         state.clickedFile = actions.payload;
                       },
-                      removeFile: (state, action: PayloadAction<{ id: string }>) => {
-                        state.fileTree = changeActiveFile(
-                          state.fileTree,
-                          action.payload.id,
-                          false
-                        );
-                        state.openedFiles = state.openedFiles.filter(
-                          (file) => file.id !== action.payload.id
-                        );
+                      removeFile: (state, action: PayloadAction<IFile[]>) => {
+                        state.openedFiles = action.payload;
+                      },
+                      removeFileTap: (state, action: PayloadAction<string | null>) => {
+                        state.removeFileTap = action.payload;
                       },
                     },
                   });
                   
-                  export const { setOpenedFiles, removeFile, setActiveFile, setContentAction } =
+                  export const { setOpenedFiles, removeFile, setActiveFile, setContentAction ,removeFileTap } =
                     fileTreeSlice.actions;
                   export default fileTreeSlice.reducer;
+                  
                   `,
                 },
               ],
@@ -644,6 +859,23 @@ export const fileTree: IFile = {
             `,
             },
           ],
+        },
+      ],
+    },
+    {
+      id: uuidv4(),
+      fileName: "data",
+      isFolder: true,
+      isActive: false,
+      isOpen: false,
+      children: [
+        {
+          id: uuidv4(),
+          fileName: "index.tsx",
+          isActive: false,
+          isFolder: false,
+          isOpen: false,
+          content: `//NOT, Active Now`,
         },
       ],
     },

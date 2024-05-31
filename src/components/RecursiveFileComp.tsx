@@ -14,6 +14,7 @@ import { changeActiveFile } from "../utils/changeActiveFile.ts";
 
 type TProps = {
   fileTree: IFile;
+  showAddFile?: boolean;
 };
 
 const RecursiveFileComp = ({ fileTree }: TProps) => {
@@ -21,7 +22,9 @@ const RecursiveFileComp = ({ fileTree }: TProps) => {
   const { openedFiles } = useAppSelector((state) => state.fileTree);
   const { fileName, isOpen, isFolder, children, isActive, id, content } =
     fileTree;
+
   // Handlers
+
   const openFileHandler = () => {
     if (!isActive) {
       dispatch(setActiveFile(fileTree));
@@ -86,6 +89,7 @@ const RecursiveFileComp = ({ fileTree }: TProps) => {
         </div>
         <p>{fileName}</p>
       </span>
+
       {isOpen &&
         children?.map((el) => <RecursiveFileComp key={el.id} fileTree={el} />)}
     </div>

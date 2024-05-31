@@ -1,22 +1,39 @@
+import { ReactNode, useEffect, useRef } from "react";
+
 type TProps = {
+  closeMenu: (val: boolean) => void;
+  children: ReactNode;
   position: {
     x: number;
     y: number;
   };
 };
-const Menu = ({ position: { x, y } }: TProps) => {
+
+const Menu = ({ position: { x, y }, closeMenu, children }: TProps) => {
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const clickOutSide = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        closeMenu(false);
+      }
+    };
+
+    window.addEventListener("click", clickOutSide);
+
+    return () => {
+      window.removeEventListener("click", clickOutSide);
+    };
+  }, [closeMenu]);
+
   return (
-    <ul
+    <div
+      ref={menuRef}
       style={{ position: "absolute", top: y, left: x }}
-      className="bg-gray-600 text-black  px-6 py-1 p-1  w-1/5 rounded-md font-semibold"
+      className="bg-gray-600 text-white  font-extralight text-sm  px-6 py-1 p-1  w-1/5 rounded-md "
     >
-      <li className=" hover:bg-gray-400 w-full  cursor-pointer p-1 mb-1 rounded-md duration-200 hover:scale-105">
-        Close
-      </li>
-      <li className="hover:bg-gray-400 w-full p-1  cursor-pointer rounded-md duration-200 hover:scale-105">
-        Close All
-      </li>
-    </ul>
+      {children}
+    </div>
   );
 };
 

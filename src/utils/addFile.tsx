@@ -8,17 +8,19 @@ const deepCloneNode = (node: IFile): IFile => {
   };
 };
 
-export const changeActiveFile = (
+const addFile = (
   node: IFile,
-  id: string | undefined,
+  payload: IFile | undefined,
   active: boolean
 ): IFile => {
   const toggleStatusRecursive = (currentNode: IFile): IFile => {
     // Clone the current node to avoid direct mutation
     const clonedNode = deepCloneNode(currentNode);
 
-    if (clonedNode.id === id) {
-      clonedNode.isActive = active;
+    if (clonedNode.id === payload?.id) {
+      console.log(payload.id);
+
+      //   clonedNode.children?.push(payload);
 
       if (clonedNode.isFolder && !clonedNode.isOpen) {
         clonedNode.isOpen = active;
@@ -42,3 +44,5 @@ export const changeActiveFile = (
 
   return toggleStatusRecursive(node);
 };
+
+export default addFile;
