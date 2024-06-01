@@ -9,10 +9,11 @@ import {
 import { useAppDispatch } from "../toolkit/hooks";
 
 type TProps = {
+  setShowAddFolder: (val: boolean) => void;
   selectId: string;
 };
 
-const ButtonAddFolder = ({ selectId }: TProps) => {
+const ButtonAddFolder = ({ selectId, setShowAddFolder }: TProps) => {
   const dispatch = useAppDispatch();
   const [nameFolder, setNameFolder] = useState<{ name_folder: string }>({
     name_folder: "",
@@ -28,6 +29,7 @@ const ButtonAddFolder = ({ selectId }: TProps) => {
   };
 
   const addNewFolderHandler = () => {
+    setShowAddFolder(false);
     const newItem = {
       id: uuidv4(),
       isFolder: true,

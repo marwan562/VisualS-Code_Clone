@@ -3,6 +3,7 @@ import { IFile } from "../../interfaces";
 import { fileTree } from "../../data";
 import { changeActiveFile } from "../../utils/changeActiveFile"; // Corrected function name
 import { addItemToFileTree } from "../../utils/addFile";
+import { deleteItemFromFileTree } from "../../utils/removeContextMenu";
 
 interface IClickedFile {
   fileName: string;
@@ -32,7 +33,7 @@ const fileTreeSlice = createSlice({
   reducers: {
     addFileAction: (
       state,
-      action: PayloadAction<{ id: string; newItem:IFile }>
+      action: PayloadAction<{ id: string; newItem: IFile }>
     ) => {
       state.fileTree = addItemToFileTree(
         state.fileTree,
@@ -74,6 +75,9 @@ const fileTreeSlice = createSlice({
     removeFileTap: (state, action: PayloadAction<string | null>) => {
       state.removeFileTap = action.payload;
     },
+    removeLeftSideContextMenu: (state, action: PayloadAction<string|null>) => {
+      state.fileTree = deleteItemFromFileTree(state.fileTree, action.payload);
+    },
   },
 });
 
@@ -84,5 +88,6 @@ export const {
   setContentAction,
   removeFileTap,
   addFileAction,
+  removeLeftSideContextMenu
 } = fileTreeSlice.actions;
 export default fileTreeSlice.reducer;

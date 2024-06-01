@@ -6,6 +6,7 @@ import { IFile } from "../interfaces/index.ts";
 import ArrowButtom from "../assets/SVG/ArrowButtom.tsx";
 import { useAppDispatch, useAppSelector } from "../toolkit/hooks.ts";
 import {
+  removeFileTap,
   setActiveFile,
   setContentAction,
   setOpenedFiles,
@@ -34,6 +35,7 @@ const RecursiveFileComp = ({
   const { openedFiles } = useAppSelector((state) => state.fileTree);
   const { fileName, isOpen, isFolder, children, isActive, id, content } =
     fileTree;
+
   // Handlers
 
   const openFileHandler = () => {
@@ -75,6 +77,7 @@ const RecursiveFileComp = ({
   return (
     <div className="mb-1 ml-3 cursor-pointer">
       <span
+        onContextMenu={() => dispatch(removeFileTap(fileTree.id))}
         onClick={openFileHandler}
         className={`flex items-center ${
           isActive ? "bg-gray-500" : "hover:bg-gray-500"
@@ -104,7 +107,10 @@ const RecursiveFileComp = ({
       </span>
 
       {isActive && isFolder && !showAddFile && showAddFolder && (
-        <ButtonAddFolder selectId={fileTree.id} />
+        <ButtonAddFolder
+          setShowAddFolder={setShowAddFolder}
+          selectId={fileTree.id}
+        />
       )}
       {isActive && isFolder && !showAddFolder && showAddFile && (
         <ButtonAddFile selectId={fileTree.id} />
