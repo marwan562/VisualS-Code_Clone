@@ -3,16 +3,19 @@ import { PanelGroup, Panel, PanelResizeHandle } from "react-resizable-panels";
 
 type TType = {
   defaultLayout?: number[] | undefined;
-  leftPanel: React.ReactNode;
-  rightPanel: React.ReactNode;
-  showLeftPanel: boolean;
+  leftPanel?: React.ReactNode;
+  cnterPanel?: React.ReactNode;
+  rightPanel?: React.ReactNode;
+  showLeftPanel?: boolean;
 };
 
 const ResizeablePanel = ({
   leftPanel,
-  rightPanel,
+  cnterPanel,
   showLeftPanel,
-  defaultLayout = [33, 67],
+  rightPanel,
+
+  defaultLayout = [20, 50, 30],
 }: TType) => {
   const onLayout = (sizes: number[]) => {
     document.cookie = `react-resizable-panels:layout=${JSON.stringify(sizes)}`;
@@ -32,7 +35,11 @@ const ResizeablePanel = ({
         </>
       )}
 
-      <Panel defaultSize={defaultLayout[1]}>{rightPanel}</Panel>
+      <Panel defaultSize={defaultLayout[1]}>{cnterPanel}</Panel>
+      <PanelResizeHandle className="border-r-2 h-screen bg-slate-400" />
+      <Panel collapsible={true} minSize={20} defaultSize={defaultLayout[2]}>
+        {rightPanel}
+      </Panel>
     </PanelGroup>
   );
 };

@@ -1,7 +1,11 @@
 import SyntaxHighlighter from "react-syntax-highlighter";
-import { darcula } from "react-syntax-highlighter/dist/esm/styles/hljs";
+// import * as theme from "react-syntax-highlighter/dist/esm/styles/hljs";
+// import { useAppSelector } from "../toolkit/hooks";
 
 const FileSyntaxHighlight = ({ content }: { content: string }) => {
+  // const { selectTheme } = useAppSelector((state) => state.fileTree);
+
+
   return (
     <SyntaxHighlighter
       customStyle={{
@@ -12,8 +16,8 @@ const FileSyntaxHighlight = ({ content }: { content: string }) => {
         fontSize: "1.2rem",
       }}
       showLineNumbers
-      language="javascript"
-      style={darcula}
+      language="jsx"
+      // style={theme[selectTheme]}
     >
       {content}
     </SyntaxHighlighter>

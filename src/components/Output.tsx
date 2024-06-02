@@ -1,22 +1,23 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { executeCode } from "../api/api";
 
 type TProps = {
   language: 'javascript';
-  editorRef: React.MutableRefObject<any>;
 };
 
-const Output: React.FC<TProps> = ({ editorRef, language }) => {
-  const [output, setOutput] = useState<string[] | null>(null);
+const Output: React.FC<TProps> = ({ language }) => {
+  const editorRef = useRef<Monaco.editor.IStandaloneCodeEditor | null>(null);
+  const [output, setOutput] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isError, setIsError] = useState<boolean>(false);
 
   const runCode = async () => {
     const sourceCode = editorRef.current?.getValue();
     if (!sourceCode) return;
+
+    setIsLoading(true);
     try {
-      setIsLoading(true);
-      const { run: result } = await executeCode(language, sourceCode);
+      const result = await executeCode(language, sourceCode);
       setOutput(result.output.split("\n"));
       setIsError(!!result.stderr);
     } catch (error) {
@@ -34,7 +35,7 @@ const Output: React.FC<TProps> = ({ editorRef, language }) => {
         {isLoading ? "Running..." : "Run Code"}
       </button>
       <div style={{ color: isError ? "red" : "" }}>
-        {output ? (
+        {output.length ? (
           output.map((line, i) => <p key={i}>{line}</p>)
         ) : (
           <p>Click "Run Code" to see the output here</p>

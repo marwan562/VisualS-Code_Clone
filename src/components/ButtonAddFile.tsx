@@ -5,6 +5,7 @@ import { useAppDispatch } from "../toolkit/hooks";
 import {
   addFileAction,
   setActiveFile,
+  setContentAction,
   setOpenedFiles,
 } from "../toolkit/reducers/fileTreeSlice";
 import { v4 as uuidv4 } from "uuid";
@@ -34,6 +35,7 @@ const ButtonAddFile = ({ selectId }: TProps) => {
       isOpen: true,
       isActive: true,
       fileName: nameFile.name_file,
+      content:''
     };
     dispatch(addFileAction({ id: selectId, newItem }));
     dispatch(setActiveFile({ id: newItem.id }));
@@ -43,6 +45,7 @@ const ButtonAddFile = ({ selectId }: TProps) => {
         isActive: true,
       })
     );
+    dispatch(setContentAction({fileName:newItem.fileName ,fileContent:newItem.content}))
   };
 
   return (

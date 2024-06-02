@@ -1,6 +1,5 @@
 import { IFile } from "../interfaces";
 
-
 const deepCloneNode = (node: IFile): IFile => {
   return {
     ...node,
@@ -21,8 +20,8 @@ export const addItemToFileTree = (
       clonedNode.children = [
         ...(clonedNode.children || []),
         {
-        
           ...newItem,
+          content: "fs",
         },
       ];
     } else {

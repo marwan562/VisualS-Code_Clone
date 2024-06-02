@@ -1,5 +1,6 @@
 import { IFile } from "../interfaces";
 import { v4 as uuidv4 } from "uuid";
+import { Theme } from "@monaco-editor/react";
 
 export const fileTree: IFile = {
   id: uuidv4(),
@@ -991,3 +992,5 @@ export const fileTree: IFile = {
     },
   ],
 };
+
+export const themesSyntax: Theme[] = ["light", "vs-dark"];

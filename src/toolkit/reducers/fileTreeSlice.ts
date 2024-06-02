@@ -4,6 +4,7 @@ import { fileTree } from "../../data";
 import { changeActiveFile } from "../../utils/changeActiveFile"; // Corrected function name
 import { addItemToFileTree } from "../../utils/addFile";
 import { deleteItemFromFileTree } from "../../utils/removeContextMenu";
+import { Theme } from "@monaco-editor/react";
 
 interface IClickedFile {
   fileName: string;
@@ -11,6 +12,7 @@ interface IClickedFile {
 }
 
 type TState = {
+  selectTheme: Theme;
   fileTree: IFile;
   openedFiles: IFile[];
   clickedFile: IClickedFile;
@@ -18,6 +20,7 @@ type TState = {
 };
 
 const initialState: TState = {
+  selectTheme: "vs-dark",
   fileTree: { ...fileTree },
   openedFiles: [],
   clickedFile: {
@@ -31,6 +34,9 @@ const fileTreeSlice = createSlice({
   name: "fileTree",
   initialState,
   reducers: {
+    setSelectedTheme: (state, action) => {
+      state.selectTheme = action.payload;
+    },
     addFileAction: (
       state,
       action: PayloadAction<{ id: string; newItem: IFile }>
@@ -75,7 +81,10 @@ const fileTreeSlice = createSlice({
     removeFileTap: (state, action: PayloadAction<string | null>) => {
       state.removeFileTap = action.payload;
     },
-    removeLeftSideContextMenu: (state, action: PayloadAction<string|null>) => {
+    removeLeftSideContextMenu: (
+      state,
+      action: PayloadAction<string | null>
+    ) => {
       state.fileTree = deleteItemFromFileTree(state.fileTree, action.payload);
     },
   },
@@ -88,6 +97,7 @@ export const {
   setContentAction,
   removeFileTap,
   addFileAction,
-  removeLeftSideContextMenu
+  removeLeftSideContextMenu,
+  setSelectedTheme,
 } = fileTreeSlice.actions;
 export default fileTreeSlice.reducer;
