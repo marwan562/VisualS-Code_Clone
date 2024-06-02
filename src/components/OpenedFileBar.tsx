@@ -1,47 +1,103 @@
-import React, { useState } from "react";
-import { executeCode } from "../api/api";
+import { useState } from "react";
+import { useAppDispatch, useAppSelector } from "../toolkit/hooks";
+import { filterOpenedFiles } from "../utils/filterOpenedFiles";
+import OpenedFileBarTap from "./OpenedFileBarTap";
+import { Editor } from "@monaco-editor/react";
+import Menu from "./UI/Menu";
+import {
+  removeFile,
+  setActiveFile,
+  setContentAction,
+} from "../toolkit/reducers/fileTreeSlice";
+import { editor } from "monaco-editor";
 
-type TProps = {
-  language: 'javascript';
-  editorRef: React.MutableRefObject<any>;
-};
+const OpenedFileBar = ({ editorRef }: { editorRef: any }) => {
+  const onMount = (editor: editor.IStandaloneCodeEditor) => {
+    editorRef!.current = editor;
+    editor.focus();
+  };
 
-const Output: React.FC<TProps> = ({ editorRef, language }) => {
-  const [output, setOutput] = useState<string[] | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [isError, setIsError] = useState<boolean>(false);
+  ///////////////////////
+  const [showMenu, setShowMenu] = useState(false);
+  const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
 
-  const runCode = async () => {
-    const sourceCode = editorRef.current?.getValue();
-    if (!sourceCode) return;
-    try {
-      setIsLoading(true);
-      const { run: result } = await executeCode(language, sourceCode);
-      setOutput(result.output.split("\n"));
-      setIsError(!!result.stderr);
-    } catch (error) {
-      console.error(error);
-      setIsError(true);
-    } finally {
-      setIsLoading(false);
-    }
+  const { openedFiles, fileTree, clickedFile, removeFileTap, selectTheme } =
+    useAppSelector((state) => state.fileTree);
+
+  const contextMuneHandler = (
+    e: React.MouseEvent<HTMLUListElement, MouseEvent>
+  ) => {
+    e.preventDefault();
+    setShowMenu(true);
+    setMenuPosition({ x: e.clientX, y: e.clientY });
+  };
+  const dispatch = useAppDispatch();
+
+  const filterOpenedFile = filterOpenedFiles(openedFiles, fileTree);
+
+  const closeOneFile = () => {
+    setShowMenu(false);
+    const filter = openedFiles.filter((file) => file.id !== removeFileTap);
+    const lastTap = filter[filter.length - 1];
+    const fileLastTap = openedFiles.find((file) => file?.id === lastTap?.id);
+
+    dispatch(removeFile(filter));
+    dispatch(
+      setContentAction({
+        fileContent: lastTap?.content,
+        fileName: lastTap?.fileName,
+      })
+    );
+    dispatch(setActiveFile(fileLastTap));
+  };
+  const closeAllFiles = () => {
+    setShowMenu(false);
+    dispatch(removeFile([]));
   };
 
   return (
     <div>
-      <p>Output</p>
-      <button onClick={runCode} disabled={isLoading}>
-        {isLoading ? "Running..." : "Run Code"}
-      </button>
-      <div style={{ color: isError ? "red" : "" }}>
-        {output ? (
-          output.map((line, i) => <p key={i}>{line}</p>)
-        ) : (
-          <p>Click "Run Code" to see the output here</p>
-        )}
-      </div>
+      <ul onContextMenu={contextMuneHandler} className=" flex  items-center ">
+        {filterOpenedFile.map((el) => (
+          <OpenedFileBarTap key={el.id} fileTree={el} />
+        ))}
+      </ul>
+      {clickedFile.fileName && (
+        <Editor
+          options={{
+            minimap: {
+              enabled: false,
+            },
+            fontSize: 17,
+          }}
+          height="93vh"
+          language={"javascript"}
+          onMount={onMount}
+          theme={selectTheme}
+          value={clickedFile.fileContent}
+        />
+      )}
+
+      {showMenu && (
+        <Menu closeMenu={setShowMenu} position={menuPosition}>
+          <ul>
+            <li
+              onClick={closeOneFile}
+              className=" hover:bg-blue-500 w-full  cursor-pointer p-1 mb-1 rounded-md duration-200 hover:scale-105"
+            >
+              Close
+            </li>
+            <li
+              onClick={closeAllFiles}
+              className="hover:bg-blue-500 w-full p-1  cursor-pointer rounded-md duration-200 hover:scale-105"
+            >
+              Close All
+            </li>
+          </ul>
+        </Menu>
+      )}
     </div>
   );
 };
 
-export default Output;
+export default OpenedFileBar;

@@ -1,28 +1,28 @@
-import React, { useState, useRef } from "react";
+import { useState } from "react";
 import { executeCode } from "../api/api";
+import { TCode_Snippets } from "../constans/constans";
 
 type TProps = {
-  language: 'javascript';
+  language: TCode_Snippets;
+  editorRef: any;
 };
 
-const Output: React.FC<TProps> = ({ language }) => {
-  const editorRef = useRef<Monaco.editor.IStandaloneCodeEditor | null>(null);
-  const [output, setOutput] = useState<string[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [isError, setIsError] = useState<boolean>(false);
+const Output = ({ editorRef, language }: TProps) => {
+  const [output, setOutput] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isError, setIsError] = useState(false);
 
   const runCode = async () => {
-    const sourceCode = editorRef.current?.getValue();
+    const sourceCode = editorRef.current.getValue();
     if (!sourceCode) return;
-
-    setIsLoading(true);
     try {
-      const result = await executeCode(language, sourceCode);
+      setIsLoading(true);
+      const { run: result } = await executeCode(language, sourceCode);
       setOutput(result.output.split("\n"));
-      setIsError(!!result.stderr);
+      result.stderr ? setIsError(true) : setIsError(false);
     } catch (error) {
-      console.error(error);
-      setIsError(true);
+      console.log(error);
+      console.log(error);
     } finally {
       setIsLoading(false);
     }
@@ -31,18 +31,15 @@ const Output: React.FC<TProps> = ({ language }) => {
   return (
     <div>
       <p>Output</p>
-      <button onClick={runCode} disabled={isLoading}>
-        {isLoading ? "Running..." : "Run Code"}
+      <button disabled={isLoading} onClick={runCode}>
+        Run Code
       </button>
-      <div style={{ color: isError ? "red" : "" }}>
-        {output.length ? (
-          output.map((line, i) => <p key={i}>{line}</p>)
-        ) : (
-          <p>Click "Run Code" to see the output here</p>
-        )}
+      <div color={isError ? "red.400" : ""}>
+        {output
+          ? output?.map((line, i) => <p key={i}>{line}</p>)
+          : 'Click "Run Code" to see the output here'}
       </div>
     </div>
   );
 };
-
 export default Output;

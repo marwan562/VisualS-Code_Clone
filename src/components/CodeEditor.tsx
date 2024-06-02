@@ -9,7 +9,7 @@ import LeftPanel from "./LeftPanel";
 import Output from "./Output";
 
 function CodeEditor() {
-  const editorRef = useRef(null);
+    const editorRef = useRef(null);
   const { openedFiles, selectTheme } = useAppSelector(
     (state) => state.fileTree
   );
@@ -50,13 +50,7 @@ function CodeEditor() {
               setShowMenuTheme={setShowMenuTheme}
             />
           }
-          cnterPanel={
-            openedFiles.length ? (
-              <OpenedFileBar editorRef={editorRef} />
-            ) : (
-              <WelocmeTap />
-            )
-          }
+          cnterPanel={openedFiles.length ? <OpenedFileBar editorRef={editorRef} /> : <WelocmeTap />}
           rightPanel={<Output language="javascript" editorRef={editorRef} />}
         />
       </div>
