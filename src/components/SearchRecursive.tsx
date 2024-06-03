@@ -8,6 +8,7 @@ import {
   setOpenedFiles,
 } from "../toolkit/reducers/fileTreeSlice";
 import { changeActiveFile } from "../utils/changeActiveFile";
+import { getFileNames } from "../utils/getFIleNames";
 
 interface IFile {
   id: string;
@@ -22,6 +23,7 @@ interface IFile {
 const SearchRecursive = () => {
   const dispatch = useAppDispatch();
   const { fileTree, openedFiles } = useAppSelector((state) => state.fileTree);
+  const renderFileNames = getFileNames(fileTree);
   const [inputValue, setInputValue] = useState("");
   const [isFocused, setIsFocused] = useState(false);
   const [isMouseOverList, setIsMouseOverList] = useState(false);
@@ -77,26 +79,24 @@ const SearchRecursive = () => {
       !node.isFolder &&
       node.fileName.toLowerCase().includes(query.toLowerCase())
     ) {
-      return [node]; // Return file name as an array
+      return [node];
     }
 
     if (node.isFolder && node.children) {
       return node.children
         .map((child) => filterFileTree(child, query))
-        .flat() // Flatten the array of arrays into a single array
-        .filter(Boolean); // Remove any falsy values
+        .flat()
+        .filter(Boolean);
     }
 
-    return []; // Return an empty array if no match found
+    return [];
   };
 
   let filteredTree: IFile[] = [];
 
   if (isFocused && !inputValue) {
-    // Show all filenames when input is focused and no query is entered
     filteredTree = filterFileTree(fileTree, "");
   } else {
-    // Filter filenames based on input value
     filteredTree = filterFileTree(fileTree, inputValue);
   }
 
@@ -127,7 +127,7 @@ const SearchRecursive = () => {
               filteredTree.map((fileName, inx) => (
                 <div
                   key={inx}
-                  className="p-2 flex items-center justify-start space-x-3 hover:bg-[#2a2d2e]"
+                  className="p-2 cursor-pointer flex items-center justify-start space-x-3 hover:bg-[#2a2d2e]"
                   onClick={() => handleFileClick(fileName)}
                 >
                   <FolderStyles name={fileName.fileName} isFolder={false} />
@@ -135,7 +135,20 @@ const SearchRecursive = () => {
                 </div>
               ))
             ) : (
-              <div className="p-2">No files found</div>
+              <div className="p-2">
+                {renderFileNames.map((file, inx) => {
+                  return (
+                    <div
+                      key={inx}
+                      className="p-2  cursor-pointer flex items-center justify-start space-x-3 hover:bg-[#2a2d2e]"
+                      onClick={() => handleFileClick(file)}
+                    >
+                      <FolderStyles name={file.fileName} isFolder={false} />
+                      <h2>{file.fileName}</h2>
+                    </div>
+                  );
+                })}
+              </div>
             )}
           </div>
         )}
