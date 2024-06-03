@@ -7,7 +7,7 @@ const WelocmeTap = () => {
         </h2>
         <img
           className=" w-64"
-          src="src/assets/icons/vscode.svg"
+          src="/vscode.svg"
           alt="Welcome_Tap"
         />
       </div>
