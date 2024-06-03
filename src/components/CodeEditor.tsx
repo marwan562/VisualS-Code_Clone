@@ -7,9 +7,9 @@ import { setSelectedTheme } from "../toolkit/reducers/fileTreeSlice";
 import { themesSyntax } from "../data";
 import LeftPanel from "./LeftPanel";
 import Output from "./Output";
-
+import SearchRecursive from "./SearchRecursive";
 function CodeEditor() {
-    const editorRef = useRef(null);
+  const editorRef = useRef(null);
   const { openedFiles, selectTheme } = useAppSelector(
     (state) => state.fileTree
   );
@@ -30,27 +30,33 @@ function CodeEditor() {
   };
 
   return (
-    <div className="  ">
+    <div className="h-[100vh] flex flex-col">
+      <SearchRecursive />
       {showMenuTheme && (
         <select
           defaultValue={selectTheme}
           onChange={onchangeThemeHandler}
           title="Select-theme"
-          className=" absolute left-36 top border-b-4 border-t-4 border-x-2 w-fit  top-6 z-50 bg-gray-600   px-8 py-1 p-1 rounded-md  "
+          className="absolute left-36 top border-b-4 border-t-4 border-x-2 w-fit top-6 z-50 bg-gray-600 px-8 py-1 p-1 rounded-md"
         >
           {renderSelectThemes}
         </select>
       )}
-      <div className=" flex ">
+      <div className="flex flex-1 overflow-hidden">
         <ResizeablePanel
-          showLeftPanel
           leftPanel={
             <LeftPanel
               showMenuTheme={showMenuTheme}
               setShowMenuTheme={setShowMenuTheme}
             />
           }
-          cnterPanel={openedFiles.length ? <OpenedFileBar editorRef={editorRef} /> : <WelocmeTap />}
+          cnterPanel={
+            openedFiles.length ? (
+              <OpenedFileBar editorRef={editorRef} />
+            ) : (
+              <WelocmeTap />
+            )
+          }
           rightPanel={<Output language="javascript" editorRef={editorRef} />}
         />
       </div>

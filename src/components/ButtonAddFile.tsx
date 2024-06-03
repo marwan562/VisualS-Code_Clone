@@ -66,14 +66,14 @@ const ButtonAddFile = ({ selectId }: TProps) => {
           onChange={onchangeHandler}
           name="name_file"
           type="text"
-          className=" w-full mt-1 bg-gray-700 ml-4 text-base  outline-none rounded-sm"
+          className={` ${!nameFile.name_file && " outline-red-700 outline-2"} w-full mt-1 text-white bg-gray-700 ml-4 text-base  outline-none rounded-sm`}
         />
       </div>
       {!nameFile.name_file && (
-        <span className="  border border-red-600 text-sm ml-[42px] w-full bg-red-900  ">
+        <div className=" text-white bg-red-800 w-fit  p-2 ml-[50px] border-2 border-red-700 ">
           A File name must be Provided
-        </span>
-      )}
+        </div>
+      )} 
     </div>
   );
 };

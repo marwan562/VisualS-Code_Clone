@@ -59,13 +59,15 @@ const ButtonAddFolder = ({ selectId, setShowAddFolder }: TProps) => {
           onChange={onchangeHandler}
           name="name_folder"
           type="text"
-          className=" w-full mt-1 bg-gray-700 ml-4 text-base  outline-none rounded-sm"
+          className={` ${
+            !nameFolder.name_folder && " outline-red-700 outline-2"
+          } w-full mt-1 text-white bg-gray-700 ml-4 text-base  outline-none rounded-sm`}
         />
       </div>
       {!nameFolder.name_folder && (
-        <span className="   border border-red-600 text-sm ml-[25px] w-full bg-red-900  ">
+        <div className="   text-white bg-red-800 w-fit  p-2 ml-[50px] border-2 border-red-700  ">
           A Folder name must be Provided
-        </span>
+        </div>
       )}
     </div>
   );

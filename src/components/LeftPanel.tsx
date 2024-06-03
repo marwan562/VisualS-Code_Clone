@@ -19,6 +19,7 @@ const LeftPanel = ({ setShowMenuTheme, showMenuTheme }: TProps) => {
   const [showAddFolder, setShowAddFolder] = useState(false);
   const [showAddFile, setShowAddFile] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
+  const [showRenameFile, setShowRenameFile] = useState(false);
   const [position, setPosition] = useState({ x: 0, y: 0 });
 
   const showAddFolderHandler = () => {
@@ -38,13 +39,14 @@ const LeftPanel = ({ setShowMenuTheme, showMenuTheme }: TProps) => {
   const themeHandler = () => {
     setShowMenuTheme(!showMenuTheme);
   };
+
   return (
     <div
       onContextMenu={(e) => {
         setPosition({ x: e.clientX, y: e.clientY });
         setShowMenu(true);
       }}
-      className=" mt-1"
+      className=""
     >
       <div className="flex items-center justify-between px-2 my-[9px]">
         <h2>{fileTree.fileName}</h2>
@@ -61,14 +63,17 @@ const LeftPanel = ({ setShowMenuTheme, showMenuTheme }: TProps) => {
         </div>
       </div>
       <hr />
-      <RecursiveFileComp
-        setShowAddFile={setShowAddFile}
-        showAddFile={showAddFile}
-        setShowAddFolder={setShowAddFolder}
-        showAddFolder={showAddFolder}
-        fileTree={fileTree}
-      />
-
+      <div className=" h-[87vh] overflow-y-auto mt-1">
+        <RecursiveFileComp
+          setShowRenameFile={setShowRenameFile}
+          showRenameFile={showRenameFile}
+          setShowAddFile={setShowAddFile}
+          showAddFile={showAddFile}
+          setShowAddFolder={setShowAddFolder}
+          showAddFolder={showAddFolder}
+          fileTree={fileTree}
+        />
+      </div>
       {showMenu && (
         <Menu position={position} closeMenu={setShowMenu}>
           <ul>
@@ -81,9 +86,16 @@ const LeftPanel = ({ setShowMenuTheme, showMenuTheme }: TProps) => {
             >
               Remove
             </li>
-            <li className="hover:bg-blue-500 w-full p-1  cursor-pointer rounded-md duration-200 hover:scale-105">
-              Rename
-            </li>
+            {!showRenameFile && (
+              <li
+                onClick={() => {
+                  setShowRenameFile(true);
+                }}
+                className="hover:bg-blue-500 w-full p-1  cursor-pointer rounded-md duration-200 hover:scale-105"
+              >
+                Rename
+              </li>
+            )}
           </ul>
         </Menu>
       )}

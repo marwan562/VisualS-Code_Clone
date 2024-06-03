@@ -5,6 +5,7 @@ import { changeActiveFile } from "../../utils/changeActiveFile"; // Corrected fu
 import { addItemToFileTree } from "../../utils/addFile";
 import { deleteItemFromFileTree } from "../../utils/removeContextMenu";
 import { Theme } from "@monaco-editor/react";
+import { renameItemById } from "../../utils/renameItemById";
 
 interface IClickedFile {
   fileName: string;
@@ -87,6 +88,16 @@ const fileTreeSlice = createSlice({
     ) => {
       state.fileTree = deleteItemFromFileTree(state.fileTree, action.payload);
     },
+    renameFilesAction: (
+      state,
+      action: PayloadAction<{ idToRename: string; newName: string }>
+    ) => {
+      state.fileTree = renameItemById(
+        state.fileTree,
+        action.payload.idToRename,
+        action.payload.newName
+      );
+    },
   },
 });
 
@@ -99,5 +110,6 @@ export const {
   addFileAction,
   removeLeftSideContextMenu,
   setSelectedTheme,
+  renameFilesAction
 } = fileTreeSlice.actions;
 export default fileTreeSlice.reducer;

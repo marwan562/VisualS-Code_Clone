@@ -57,7 +57,10 @@ const OpenedFileBar = ({ editorRef }: { editorRef: any }) => {
 
   return (
     <div>
-      <ul onContextMenu={contextMuneHandler} className=" flex  items-center ">
+      <ul
+        onContextMenu={contextMuneHandler}
+        className=" flex  justify-start overflow-x-auto   items-center "
+      >
         {filterOpenedFile.map((el) => (
           <OpenedFileBarTap key={el.id} fileTree={el} />
         ))}
@@ -70,7 +73,7 @@ const OpenedFileBar = ({ editorRef }: { editorRef: any }) => {
             },
             fontSize: 17,
           }}
-          height="93vh"
+          height="88vh"
           language={"javascript"}
           onMount={onMount}
           theme={selectTheme}

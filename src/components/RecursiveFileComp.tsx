@@ -1,5 +1,5 @@
 /* eslint-disable react-refresh/only-export-components */
-import { memo } from "react";
+import { memo, useState } from "react";
 import ArrowIcon from "../assets/SVG/ArrowIcon.tsx";
 import FolderStyles from "../assets/SVG/IconsGenerate.tsx";
 import { IFile } from "../interfaces/index.ts";
@@ -7,6 +7,7 @@ import ArrowButtom from "../assets/SVG/ArrowButtom.tsx";
 import { useAppDispatch, useAppSelector } from "../toolkit/hooks.ts";
 import {
   removeFileTap,
+  renameFilesAction,
   setActiveFile,
   setContentAction,
   setOpenedFiles,
@@ -19,7 +20,9 @@ type TProps = {
   fileTree: IFile;
   showAddFolder?: boolean;
   showAddFile?: boolean;
+  showRenameFile?: boolean;
   setShowAddFile: (val: boolean) => void;
+  setShowRenameFile: (val: boolean) => void;
   setShowAddFolder: (val: boolean) => void;
 };
 
@@ -28,13 +31,18 @@ const RecursiveFileComp = ({
   showAddFolder,
   showAddFile,
   setShowAddFile,
-
+  showRenameFile,
   setShowAddFolder,
+  setShowRenameFile,
 }: TProps) => {
   const dispatch = useAppDispatch();
-  const { openedFiles } = useAppSelector((state) => state.fileTree);
+  const { openedFiles, removeFileTap: selectIdRename } = useAppSelector(
+    (state) => state.fileTree
+  );
   const { fileName, isOpen, isFolder, children, isActive, id, content } =
     fileTree;
+
+  const [renameFile, setRenameFile] = useState("");
 
   // Handlers
 
@@ -77,11 +85,16 @@ const RecursiveFileComp = ({
   return (
     <div className="mb-1 ml-3 cursor-pointer">
       <span
-        onContextMenu={() => dispatch(removeFileTap(fileTree.id))}
+        onContextMenu={() => {
+          if (showRenameFile) {
+            setShowRenameFile(false);
+          }
+          dispatch(removeFileTap(fileTree.id));
+        }}
         onClick={openFileHandler}
         className={`flex items-center ${
-          isActive ? "bg-gray-500" : "hover:bg-gray-500"
-        } rounded-md hover:scale-105 duration-300 p-[1px] hover:opacity-95 space-x-1 cursor-pointer`}
+          isActive ? "bg-gray-500" : "hover:bg-gray-500 "
+        } rounded-sm duration-300 p-[1px] hover:opacity-95 space-x-1 cursor-pointer`}
       >
         <div>
           {isFolder ? (
@@ -90,7 +103,11 @@ const RecursiveFileComp = ({
               <FolderStyles
                 isFolder={isFolder}
                 isOpen={isOpen}
-                name={fileName}
+                name={
+                  selectIdRename === fileTree.id && showRenameFile
+                    ? renameFile
+                    : fileName
+                }
               />
             </div>
           ) : (
@@ -98,12 +115,37 @@ const RecursiveFileComp = ({
               <FolderStyles
                 isFolder={isFolder}
                 isOpen={isOpen}
-                name={fileName}
+                name={
+                  selectIdRename === fileTree.id && showRenameFile
+                    ? renameFile
+                    : fileName
+                }
               />
             </div>
           )}
         </div>
-        <p>{fileName}</p>
+        {selectIdRename === fileTree.id && showRenameFile ? (
+          <input
+            autoFocus
+            defaultValue={fileName}
+            onChange={(e) => setRenameFile(e.target.value)}
+            className="  w-full mt-1 bg-gray-700 ml-4 text-base  outline-none rounded-sm "
+            type="text"
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && renameFile) {
+                setShowRenameFile(false);
+                dispatch(
+                  renameFilesAction({
+                    newName: renameFile,
+                    idToRename: selectIdRename,
+                  })
+                );
+              }
+            }}
+          />
+        ) : (
+          <p>{fileName}</p>
+        )}
       </span>
 
       {isActive && isFolder && !showAddFile && showAddFolder && (
@@ -119,6 +161,8 @@ const RecursiveFileComp = ({
       {isOpen &&
         children?.map((el) => (
           <RecursiveFileComp
+            setShowRenameFile={setShowRenameFile}
+            showRenameFile={showRenameFile}
             setShowAddFile={setShowAddFile}
             showAddFile={showAddFile}
             setShowAddFolder={setShowAddFolder}

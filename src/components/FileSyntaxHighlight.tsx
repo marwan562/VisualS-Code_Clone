@@ -5,19 +5,15 @@ import SyntaxHighlighter from "react-syntax-highlighter";
 const FileSyntaxHighlight = ({ content }: { content: string }) => {
   // const { selectTheme } = useAppSelector((state) => state.fileTree);
 
-
   return (
     <SyntaxHighlighter
       customStyle={{
         backgroundColor: "transparent",
         width: "100%",
         maxHeight: "100vh",
-        overflowX: "auto",
         fontSize: "1.2rem",
       }}
-      showLineNumbers
       language="jsx"
-      // style={theme[selectTheme]}
     >
       {content}
     </SyntaxHighlighter>

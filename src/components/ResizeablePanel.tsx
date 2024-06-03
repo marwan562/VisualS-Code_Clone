@@ -6,16 +6,14 @@ type TType = {
   leftPanel?: React.ReactNode;
   cnterPanel?: React.ReactNode;
   rightPanel?: React.ReactNode;
-  showLeftPanel?: boolean;
 };
 
 const ResizeablePanel = ({
   leftPanel,
   cnterPanel,
-  showLeftPanel,
   rightPanel,
 
-  defaultLayout = [20, 50, 30],
+  defaultLayout = [20, 55, 25],
 }: TType) => {
   const onLayout = (sizes: number[]) => {
     document.cookie = `react-resizable-panels:layout=${JSON.stringify(sizes)}`;
@@ -26,14 +24,10 @@ const ResizeablePanel = ({
       onLayout={onLayout}
       autoSaveId="condition"
     >
-      {showLeftPanel && (
-        <>
-          <Panel collapsible={true} minSize={17}>
-            {leftPanel}
-          </Panel>
-          <PanelResizeHandle className="border-r-2 h-screen bg-slate-400" />
-        </>
-      )}
+      <Panel collapsible={true} minSize={17}>
+          {leftPanel}
+      </Panel>
+      <PanelResizeHandle className="border-r-2 h-screen bg-slate-400" />
 
       <Panel defaultSize={defaultLayout[1]}>{cnterPanel}</Panel>
       <PanelResizeHandle className="border-r-2 h-screen bg-slate-400" />
