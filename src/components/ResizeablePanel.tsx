@@ -1,5 +1,6 @@
 import React from "react";
 import { PanelGroup, Panel, PanelResizeHandle } from "react-resizable-panels";
+import LeftBar from "./LeftBar";
 
 type TType = {
   defaultLayout?: number[] | undefined;
@@ -18,14 +19,16 @@ const ResizeablePanel = ({
   const onLayout = (sizes: number[]) => {
     document.cookie = `react-resizable-panels:layout=${JSON.stringify(sizes)}`;
   };
+
   return (
     <PanelGroup
-      direction="horizontal"
       onLayout={onLayout}
+      direction="horizontal"
       autoSaveId="condition"
     >
+      <LeftBar />
       <Panel collapsible={true} minSize={17}>
-          {leftPanel}
+        {leftPanel}
       </Panel>
       <PanelResizeHandle className="border-r-2 h-screen bg-slate-400" />
 

@@ -51,6 +51,7 @@ const ButtonAddFolder = ({ selectId, setShowAddFolder }: TProps) => {
         )}
 
         <input
+        autoFocus
           onKeyDown={(e) => {
             if (e.key === "Enter" && nameFolder.name_folder) {
               addNewFolderHandler();

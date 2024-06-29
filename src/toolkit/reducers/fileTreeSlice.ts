@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { IFile } from "../../interfaces";
 import { fileTree } from "../../data";
-import { changeActiveFile } from "../../utils/changeActiveFile"; // Corrected function name
+import { changeActiveFile } from "../../utils/changeActiveFile"; 
 import { addItemToFileTree } from "../../utils/addFile";
 import { deleteItemFromFileTree } from "../../utils/removeContextMenu";
 import { Theme } from "@monaco-editor/react";

@@ -14,9 +14,8 @@ import { changeActiveFile } from "../utils/changeActiveFile";
 const OpenedFileBarTap = ({ fileTree }: { fileTree: IFile }) => {
   const dispatch = useAppDispatch();
   const { fileName, id, isActive, content } = fileTree;
-
   const { openedFiles } = useAppSelector((state) => state.fileTree);
-
+ 
   const openFileHandler = () => {
     dispatch(setContentAction({ fileContent: content, fileName }));
     if (!isActive) {
@@ -58,7 +57,7 @@ const OpenedFileBarTap = ({ fileTree }: { fileTree: IFile }) => {
       key={id}
       className={` duration-300 flex items-center ${
         isActive
-          ? " border-t-4  border-cyan-600 "
+          ? " border-t-4 border-cyan-600"
           : "hover:bg-gray-500 border-t-4  border-t-transparent"
       }  justify-center space-x-2 p-2 cursor-pointer duration-300  hover:opacity-90`}
     >

@@ -58,6 +58,7 @@ const ButtonAddFile = ({ selectId }: TProps) => {
         )}
 
         <input
+        autoFocus
           onKeyDown={(e) => {
             if (e.key === "Enter" && nameFile.name_file) {
               addNewFileHandler();

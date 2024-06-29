@@ -5,11 +5,7 @@ const WelocmeTap = () => {
         <h2 className=" text-center font-semibold text-4xl mb-9 mr-6">
           Visual Studio Code
         </h2>
-        <img
-          className=" w-64"
-          src="/vscode.svg"
-          alt="Welcome_Tap"
-        />
+        <img className=" w-64" src="/vscode.svg" alt="Welcome_Tap" />
       </div>
     </div>
   );

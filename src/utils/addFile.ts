@@ -21,7 +21,7 @@ export const addItemToFileTree = (
         ...(clonedNode.children || []),
         {
           ...newItem,
-          content: "fs",
+          content: "",
         },
       ];
     } else {

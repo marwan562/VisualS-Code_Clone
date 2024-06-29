@@ -1,3 +1,5 @@
+import { IconType } from "react-icons/lib";
+
 export interface IFile {
   id: string;
   fileName: string;
@@ -5,5 +7,11 @@ export interface IFile {
   children?: IFile[];
   isActive?: boolean;
   isOpen?: boolean;
-  content?:string;
+  content?: string;
 }
+
+export type TLeftBarRenderIcons = {
+  name: "source" | "search"
+  icon: IconType 
+  isActive?: boolean;
+};

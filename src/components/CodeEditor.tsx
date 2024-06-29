@@ -8,6 +8,7 @@ import { themesSyntax } from "../data";
 import LeftPanel from "./LeftPanel";
 import Output from "./Output";
 import SearchRecursive from "./SearchRecursive";
+
 function CodeEditor() {
   const editorRef = useRef(null);
   const { openedFiles, selectTheme } = useAppSelector(
@@ -42,6 +43,7 @@ function CodeEditor() {
           {renderSelectThemes}
         </select>
       )}
+      
       <div className="flex flex-1 overflow-hidden">
         <ResizeablePanel
           leftPanel={

@@ -4,8 +4,9 @@ import FolderPlus from "../assets/SVG/FolderPlus";
 import FontEdit from "../assets/SVG/FontEdit";
 import { useAppDispatch, useAppSelector } from "../toolkit/hooks";
 import RecursiveFileComp from "./RecursiveFileComp";
-import Menu from "./UI/Menu";
 import { removeLeftSideContextMenu } from "../toolkit/reducers/fileTreeSlice";
+import Menu from "./UI/Menu";
+import LeftSearchBar from "./LeftSearchBar";
 
 type TProps = {
   showMenuTheme: boolean;
@@ -15,6 +16,7 @@ type TProps = {
 const LeftPanel = ({ setShowMenuTheme, showMenuTheme }: TProps) => {
   const dispatch = useAppDispatch();
   const { fileTree, removeFileTap } = useAppSelector((state) => state.fileTree);
+  const {name} = useAppSelector((state) => state.leftBarSlice)
 
   const [showAddFolder, setShowAddFolder] = useState(false);
   const [showAddFile, setShowAddFile] = useState(false);
@@ -46,9 +48,9 @@ const LeftPanel = ({ setShowMenuTheme, showMenuTheme }: TProps) => {
         setPosition({ x: e.clientX, y: e.clientY });
         setShowMenu(true);
       }}
-      className=""
     >
-      <div className="flex items-center justify-between px-2 my-[9px]">
+      
+      {name === 'source' ?<><div className="flex items-center justify-between px-2 my-[9px]">
         <h2>{fileTree.fileName}</h2>
         <div className=" space-x-2">
           <button onClick={themeHandler} title="Edit-Theme">
@@ -62,8 +64,8 @@ const LeftPanel = ({ setShowMenuTheme, showMenuTheme }: TProps) => {
           </button>
         </div>
       </div>
-      <hr />
-      <div className=" h-[87vh] overflow-y-auto mt-1">
+      <hr /> <div className=" h-[87vh] overflow-y-auto mt-1">
+        
         <RecursiveFileComp
           setShowRenameFile={setShowRenameFile}
           showRenameFile={showRenameFile}
@@ -73,7 +75,8 @@ const LeftPanel = ({ setShowMenuTheme, showMenuTheme }: TProps) => {
           showAddFolder={showAddFolder}
           fileTree={fileTree}
         />
-      </div>
+      </div></>:name ==="search" ? <LeftSearchBar/> : null }
+      
       {showMenu && (
         <Menu position={position} closeMenu={setShowMenu}>
           <ul>
