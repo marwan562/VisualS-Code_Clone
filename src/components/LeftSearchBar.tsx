@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import IconsGenerate from "../assets/SVG/IconsGenerate";
 import { IFile } from "../interfaces";
 import { useAppSelector } from "../toolkit/hooks";
@@ -8,39 +8,28 @@ const LeftSearchBar = () => {
   const { fileTree } = useAppSelector((state) => state.fileTree);
 
   const filterTreeByContentLazy = (
-    fileTree: IFile,
+    fileName: IFile,
     valueInput: string
   ): IFile[] => {
-    if (!valueInput || !fileTree) {
-      return [];
-    }
+    if (!valueInput || !fileName) return [];
 
-    let matchedNodes: IFile[] = [];
+    const matchedNodes: IFile[] = fileName.content
+      ?.toLowerCase()
+      .includes(valueInput.toLowerCase())
+      ? [fileName]
+      : [];
 
-    if (
-      fileTree.content &&
-      fileTree.content.toLowerCase().includes(valueInput.toLowerCase())
-    ) {
-      matchedNodes.push(fileTree);
-    }
-
-    if (fileTree.isFolder && fileTree.children) {
-      fileTree.children.forEach((child) => {
-        if (valueInput && valueInput.trim() !== "") {
-          matchedNodes = matchedNodes.concat(
-            filterTreeByContentLazy(child, valueInput)
-          );
-        }
+    if (fileName.isFolder && fileName.children) {
+      fileName.children.forEach((el) => {
+        matchedNodes.push(...filterTreeByContentLazy(el, valueInput));
       });
     }
-
     return matchedNodes;
   };
-
   const filteredNodes = filterTreeByContentLazy(fileTree, value);
 
   const handleInputChange = (query: string) => {
-    setValue(query);
+    setValue(query.trim());
   };
 
   return (
